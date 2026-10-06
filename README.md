@@ -7,8 +7,13 @@ Employees submit leave requests; managers approve or reject them. The project co
 JWT authentication with role-based authorization, EF Core migrations and optimistic concurrency,
 Angular reactive forms and RxJS, automated tests, Docker and CI.
 
-> Work in progress. See the learning plan in [docs/ROADMAP.md](docs/ROADMAP.md) and the daily
-> progress in [docs/LOG.md](docs/LOG.md).
+> Work in progress.
+
+## Documentation
+
+- [Specification](docs/SPEC.md): user stories, business rules, data model, API contract, screens
+- [Dev environment setup (Windows)](docs/SETUP.md)
+- [Learning roadmap](docs/ROADMAP.md) and [daily log](docs/LOG.md)
 
 ## Tech stack
 
