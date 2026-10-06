@@ -11,6 +11,8 @@ chuyển từ Managers System sang stack của JD (mục 12 trong tài liệu).
 
 ## 0. Nguyên tắc rèn luyện
 
+> **Trước Ngày 1:** cài môi trường theo [SETUP.md](SETUP.md) (Windows, khoảng 1–2 giờ).
+
 1. **Tự gõ code.** Dùng tài liệu, AI hay Claude để *giải thích, review và hỏi "why"*, không để viết hộ.
    Lịch sử commit chính là bằng chứng bạn tự làm.
 2. **Học → Làm → Nói.** Mỗi khái niệm P1 phải đi qua 3 bước: đọc docs, áp dụng vào LeaveFlow,
@@ -19,7 +21,9 @@ chuyển từ Managers System sang stack của JD (mục 12 trong tài liệu).
    Mỗi tính năng làm trên một branch riêng và mở Pull Request có mô tả tiếng Anh: làm gì, vì sao,
    test thế nào (luyện kỹ năng ở mục 11).
 4. **Backend xong, chạy được Swagger rồi mới làm Angular.**
-5. **Ghi nhật ký** vào `docs/LOG.md` mỗi ngày: hôm nay làm gì, học được gì, câu hỏi nào còn chưa trả lời được.
+5. **Đọc SPEC trước khi code** phần của ngày: mở user story và business rule liên quan trong
+   [SPEC.md](SPEC.md), code xong thì đối chiếu tiêu chí nghiệm thu.
+6. **Ghi nhật ký** vào `docs/LOG.md` mỗi ngày: hôm nay làm gì, học được gì, câu hỏi nào còn chưa trả lời được.
 
 ### Lịch mỗi ngày (≈ 2,5 giờ)
 
@@ -40,6 +44,8 @@ ASP.net/
 ├── README.md                    # tiếng Anh, dùng để gắn vào CV
 ├── docs/
 │   ├── ROADMAP.md               # file này
+│   ├── SPEC.md                  # đặc tả sản phẩm và kỹ thuật
+│   ├── SETUP.md                 # cài đặt môi trường Windows
 │   ├── LOG.md                   # nhật ký học hằng ngày
 │   └── interview-notes/         # câu trả lời tiếng Anh do bạn TỰ viết, mỗi mục 1 file
 ├── labs/                        # bài tập nhỏ, tách khỏi project chính
@@ -71,39 +77,23 @@ Api / Application / Domain / Infrastructure. Lần tách này trở thành câu 
 
 ---
 
-## 2. Thiết kế dữ liệu (EF Core Code-first)
+## 2. Đặc tả (SPEC)
 
-| Bảng | Cột chính | Ghi chú luyện tập |
-|---|---|---|
-| `Departments` | Id, Name | quan hệ 1-n với Employees |
-| `Employees` | Id, FullName, Email, PasswordHash, Role, DepartmentId, ManagerId | unique index trên Email; tự tham chiếu ManagerId |
-| `LeaveRequests` | Id, EmployeeId, StartDate, EndDate, Type, Reason, Status, ReviewedById, ReviewedAt, CreatedAt, **RowVersion** | composite index `(EmployeeId, Status)`; RowVersion cho optimistic concurrency |
-| `LeaveBalances` | EmployeeId, Year, TotalDays, UsedDays | cập nhật cùng transaction khi duyệt đơn |
-| `AuditLogs` *(tuần 4)* | Id, Entity, EntityId, Action, UserId, At | dùng cho câu system design "leave management" |
+Mọi chi tiết về **làm cái gì** nằm trong [SPEC.md](SPEC.md) (tiếng Anh): user story và tiêu chí
+nghiệm thu, quy tắc nghiệp vụ `BR-01…BR-11`, vòng đời đơn nghỉ phép, thiết kế bảng (cột, kiểu,
+index), API `/api/v1` kèm JSON mẫu và status code, màn hình Angular, yêu cầu phi chức năng, seed data.
+File này (ROADMAP) chỉ nói **làm khi nào**. Nếu hai file lệch nhau, SPEC là chuẩn.
 
-`Status`: `Pending → Approved | Rejected | Cancelled`. Cascade delete: dùng `Restrict`, không xóa cứng nhân viên.
-
-## 3. API contract (`/api/v1`)
-
-| Method | Route | Role | Status code cần trả đúng |
-|---|---|---|---|
-| POST | `/auth/login` | public | 200, 400, 401 |
-| GET | `/employees?page=&pageSize=&search=` | Manager | 200, 401, 403 |
-| GET | `/employees/{id}` | Manager | 200, 404 |
-| GET | `/leave-requests?status=&page=&pageSize=` | Employee (chỉ của mình), Manager (cả team) | 200 |
-| GET | `/leave-requests/{id}` | chủ đơn hoặc Manager | 200, 403/404 (chống IDOR) |
-| POST | `/leave-requests` | Employee | **201 + Location**, 400 (ProblemDetails) |
-| PUT | `/leave-requests/{id}` | chủ đơn, khi còn Pending | 204, 400, 404, 409 |
-| POST | `/leave-requests/{id}/approve` | Manager | 204, 403, 404, **409** (đã bị người khác duyệt) |
-| POST | `/leave-requests/{id}/reject` | Manager | 204, 403, 404, 409 |
-| DELETE | `/leave-requests/{id}` | chủ đơn, khi còn Pending | 204, 404 |
-
-Quy tắc nghiệp vụ: `EndDate >= StartDate`; không trùng với đơn khác đang Pending/Approved;
-không vượt số ngày phép còn lại; Manager chỉ duyệt đơn của nhân viên mình quản lý.
+Tóm tắt nhanh:
+- Bảng: `Departments`, `Employees`, `LeaveRequests` (có `RowVersion`), `LeaveBalances` (SPEC §7).
+- Trạng thái: `Pending → Approved | Rejected | Cancelled`; hủy đơn là đổi trạng thái, không xóa (SPEC §6).
+- API: `auth`, `leave-requests` (CRUD + `cancel`/`approve`/`reject`), `leave-balances/me`,
+  `employees`, `departments` (SPEC §8).
+- Story nào làm vào ngày nào: xem bảng *Traceability* ở SPEC §12.
 
 ---
 
-## 4. Lộ trình theo ngày
+## 3. Lộ trình theo ngày
 
 Ký hiệu: 📖 học · 🛠 làm · ✅ xong khi · 🗣 luyện nói (tiếng Anh). Số mục (§) là mục trong tài liệu PDF.
 
@@ -124,7 +114,7 @@ Ký hiệu: 📖 học · 🛠 làm · ✅ xong khi · 🗣 luyện nói (tiến
 - 🗣 *AddSingleton vs AddScoped vs AddTransient? What is middleware, does order matter?*
 
 **Ngày 3: EF Core và SQL Server** (§3)
-- 🛠 Chạy SQL Server bằng Docker (`mcr.microsoft.com/mssql/server`), tạo `AppDbContext`, các entity ở §2 của file này, cấu hình bằng Fluent API trong `OnModelCreating` (index, quan hệ, `Restrict`, `RowVersion`).
+- 🛠 Chạy SQL Server bằng Docker (`mcr.microsoft.com/mssql/server`), tạo `AppDbContext`, các entity theo SPEC §7, cấu hình bằng Fluent API trong `OnModelCreating` (index, quan hệ, `Restrict`, `RowVersion`).
 - 🛠 `dotnet ef migrations add Init`, `database update`, seed data (2 phòng ban, 1 manager, 5 nhân viên).
 - 🛠 Luyện migration: add, remove, rollback về migration cũ; đọc file migration được sinh ra.
 - 🛠 Bật log SQL (`LogTo(Console.WriteLine)`).
@@ -135,7 +125,7 @@ Ký hiệu: 📖 học · 🛠 làm · ✅ xong khi · 🗣 luyện nói (tiến
 - 🛠 DTO dạng `record` (`LeaveRequestDto`, `CreateLeaveRequest`), không trả entity ra ngoài.
 - 🛠 `ILeaveRequestService` + `LeaveRequestService`, controller dùng `ActionResult<T>`, `CreatedAtAction`, `NotFound`, `NoContent`.
 - 🛠 Phân trang + lọc theo status ở database (`Skip/Take`), `AsNoTracking()` và projection `Select` cho truy vấn đọc.
-- ✅ Gọi đủ CRUD trong Swagger/Postman, status code đúng như bảng API.
+- ✅ Gọi đủ CRUD trong Swagger/Postman, status code đúng như SPEC §8.
 - 🗣 *PUT vs PATCH? Is POST idempotent? Why DTOs instead of entities?*
 
 **Ngày 5: Validation, xử lý lỗi, cấu hình** (§2)
@@ -268,7 +258,7 @@ Mỗi thí nghiệm giúp bạn trả lời *"I tried it in my side project…"*
 
 ---
 
-## 5. Bảng đối chiếu: mục tài liệu → nơi luyện trong project
+## 4. Bảng đối chiếu: mục tài liệu → nơi luyện trong project
 
 | § | Chủ đề | Luyện ở đâu |
 |---|---|---|
@@ -286,7 +276,7 @@ Mỗi thí nghiệm giúp bạn trả lời *"I tried it in my side project…"*
 | 12 | Mini project | Toàn bộ LeaveFlow |
 | 13–14 | Câu hỏi & tiếng Anh | `docs/interview-notes`, ghi âm mỗi ngày |
 
-## 6. Checklist hoàn thành (theo §12 và checklist trước ngày phỏng vấn)
+## 5. Checklist hoàn thành (theo §12 và checklist trước ngày phỏng vấn)
 
 **Project**
 - [ ] ASP.NET Core Web API: Employees, LeaveRequests (CRUD + Approve/Reject)
@@ -307,7 +297,7 @@ Mỗi thí nghiệm giúp bạn trả lời *"I tried it in my side project…"*
 - [ ] Giải thích được mọi dòng trong CV
 - [ ] Chuẩn bị 3 câu hỏi để hỏi lại người phỏng vấn
 
-## 7. Tài liệu chính thức
+## 6. Tài liệu chính thức
 
 - Microsoft Learn: ASP.NET Core fundamentals, Web API tutorial, EF Core docs, AZ-900
 - angular.dev: tutorial, Essentials, Signals, Router, Forms, HttpClient
