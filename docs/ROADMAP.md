@@ -107,7 +107,7 @@ Ký hiệu: 📖 học · 🛠 làm · ✅ xong khi · 🗣 luyện nói (tiến
 - 🗣 *IEnumerable vs IQueryable? What is sync-over-async?*
 
 **Ngày 2: Khởi tạo Web API, DI, middleware** (§2)
-- 🛠 `dotnet new sln`, `dotnet new webapi -o src/LeaveFlow.Api --use-controllers`, `dotnet new gitignore`.
+- 🛠 Tạo solution và project `src/LeaveFlow.Api` bằng Visual Studio (*ASP.NET Core Web API*, tick *Use controllers*), rồi tự chạy lại bằng lệnh một lần để hiểu: `dotnet new sln`, `dotnet new webapi -o src/LeaveFlow.Api --use-controllers`, `dotnet new gitignore` (xem SETUP.md mục 4).
 - 🛠 `labs/03-di-lifetime`: 3 service Singleton / Scoped / Transient, mỗi cái sinh `Guid` trong constructor, log qua 2 request để thấy khác biệt. Thử inject Scoped vào Singleton để thấy lỗi captive dependency.
 - 🛠 Viết `RequestTimingMiddleware` đo thời gian xử lý request; thử đổi thứ tự `UseAuthentication` / `UseAuthorization`.
 - ✅ Swagger chạy; log thể hiện rõ 3 lifetime.
@@ -115,7 +115,7 @@ Ký hiệu: 📖 học · 🛠 làm · ✅ xong khi · 🗣 luyện nói (tiến
 
 **Ngày 3: EF Core và SQL Server** (§3)
 - 🛠 Chạy SQL Server bằng Docker (`mcr.microsoft.com/mssql/server`), tạo `AppDbContext`, các entity theo SPEC §7, cấu hình bằng Fluent API trong `OnModelCreating` (index, quan hệ, `Restrict`, `RowVersion`).
-- 🛠 `dotnet ef migrations add Init`, `database update`, seed data (2 phòng ban, 1 manager, 5 nhân viên).
+- 🛠 `dotnet ef migrations add Init`, `database update` (trong Visual Studio: `Add-Migration Init`, `Update-Database` ở Package Manager Console), seed data (2 phòng ban, 1 manager, 5 nhân viên).
 - 🛠 Luyện migration: add, remove, rollback về migration cũ; đọc file migration được sinh ra.
 - 🛠 Bật log SQL (`LogTo(Console.WriteLine)`).
 - ✅ Database được tạo hoàn toàn từ migration.
