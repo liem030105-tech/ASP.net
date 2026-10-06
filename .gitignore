@@ -1,0 +1,31 @@
+# .NET build output
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+[Ll]ogs/
+TestResults/
+*.nupkg
+
+# Visual Studio / Rider / VS Code user files
+.vs/
+.idea/
+*.user
+*.suo
+*.rsuser
+.vscode/*
+!.vscode/extensions.json
+
+# Secrets and local settings
+appsettings.*.local.json
+*.env
+.env
+
+# Angular / Node
+node_modules/
+dist/
+.angular/
+coverage/
+
+# OS
+Thumbs.db
+.DS_Store
