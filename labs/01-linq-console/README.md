@@ -18,11 +18,11 @@ Mở `LinqLab.slnx` bằng Visual Studio, nhấn **Ctrl+F5** để chạy.
 - [x] 8. Top 2 lương cao nhất **mỗi** phòng ban.
 - [x] 9. Join nhân viên với phòng ban, in `FullName - DepartmentName`.
 - [x] 10. Left join: liệt kê **mọi** phòng ban kèm số nhân viên (phòng trống phải hiện 0).
-- [ ] 11. `Any`: có ai lương dưới 8 triệu không? `All`: mọi người đều có email không?
-- [ ] 12. `FirstOrDefault` với id không tồn tại, xử lý kết quả `null` cho an toàn.
-- [ ] 13. Phân trang: trang 2, mỗi trang 5 người, sắp theo tên (`Skip`/`Take`).
-- [ ] 14. Nhân viên vào làm trong năm 2024.
-- [ ] 15. Người có lương **cao thứ 2** mỗi phòng ban (giống câu SQL `DENSE_RANK` trong tài liệu).
+- [x] 11. `Any`: có ai lương dưới 8 triệu không? `All`: mọi người đều có email không?
+- [x] 12. `FirstOrDefault` với id không tồn tại, xử lý kết quả `null` cho an toàn.
+- [x] 13. Phân trang: trang 2, mỗi trang 5 người, sắp theo tên (`Skip`/`Take`).
+- [x] 14. Nhân viên vào làm trong năm 2024.
+- [x] 15. Người có lương **cao thứ 2** mỗi phòng ban (giống câu SQL `DENSE_RANK` trong tài liệu).
 - [ ] 16. Danh sách tên phòng có ít nhất 1 người `Active` (không trùng lặp).
 - [ ] 17. `ToDictionary` (Id → FullName) và `ToLookup` theo phòng ban.
 - [ ] 18. Tìm người có họ "Nguyen", sắp xếp theo tên rồi theo họ.
