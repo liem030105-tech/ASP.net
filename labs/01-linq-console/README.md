@@ -8,11 +8,11 @@ Mở `LinqLab.slnx` bằng Visual Studio, nhấn **Ctrl+F5** để chạy.
   khoảng 15 người, `Status` gồm `Active`, `OnLeave`, `Resigned`; 1–2 người có `Email` rỗng.
 
 ## 20 câu LINQ
-- [ ] 1. Danh sách nhân viên `Active`.
-- [ ] 2. Nhân viên lương > 20 triệu, sắp xếp lương giảm dần.
-- [ ] 3. Chỉ lấy `FullName` và `Salary` (projection bằng `Select`).
-- [ ] 4. Tổng, trung bình, cao nhất, thấp nhất của lương.
-- [ ] 5. Đếm số người theo `Status`.
+- [x] 1. Danh sách nhân viên `Active`.
+- [x] 2. Nhân viên lương > 20 triệu, sắp xếp lương giảm dần.
+- [x] 3. Chỉ lấy `FullName` và `Salary` (projection bằng `Select`).
+- [x] 4. Tổng, trung bình, cao nhất, thấp nhất của lương.
+- [x] 5. Đếm số người theo `Status`.
 - [ ] 6. Theo từng phòng ban: số người và lương trung bình.
 - [ ] 7. Top 3 lương cao nhất công ty.
 - [ ] 8. Top 2 lương cao nhất **mỗi** phòng ban.
