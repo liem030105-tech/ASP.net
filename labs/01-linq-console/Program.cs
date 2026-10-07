@@ -96,7 +96,57 @@ var headcountPerDepartment =
     select new { Department = d.Name, EmployeeCount = deptEmployees.Count() };
 Print("Q10. Every department with headcount (left join)", headcountPerDepartment);
 
-// Q11–Q20: tự làm tiếp (xem README.md)
+// ===== Q11. Any / All =====
+var anyBelow8M = employees.Any(e => e.Salary < 8_000_000m);
+var allHaveEmail = employees.All(e => !string.IsNullOrWhiteSpace(e.Email));
+Console.WriteLine();
+Console.WriteLine("Q11. Any / All");
+Console.WriteLine($"  Anyone earning < 8M?   {anyBelow8M}");
+Console.WriteLine($"  Everyone has an email? {allHaveEmail}");
+
+// ===== Q12. FirstOrDefault với id không tồn tại =====
+var missingEmployee = employees.FirstOrDefault(e => e.Id == 99);
+var existingEmployee = employees.FirstOrDefault(e => e.Id == 3);
+Console.WriteLine();
+Console.WriteLine("Q12. FirstOrDefault and null handling");
+Console.WriteLine($"  Employee 99: {missingEmployee?.FullName ?? "(not found)"}");
+Console.WriteLine($"  Employee 3:  {existingEmployee?.FullName ?? "(not found)"}");
+
+// ===== Q13. Phân trang: trang 2, mỗi trang 5 người, sắp theo tên =====
+const int page = 2;
+const int pageSize = 5;
+var secondPage = employees
+    .OrderBy(e => e.FullName)
+    .Skip((page - 1) * pageSize)
+    .Take(pageSize)
+    .Select(e => e.FullName);
+Print($"Q13. Page {page} (page size {pageSize}), ordered by name", secondPage);
+
+// ===== Q14. Nhân viên vào làm trong năm 2024 =====
+// Lọc theo khoảng ngày (giống điều kiện SARGable trong SQL);
+// viết e.HireDate.Year == 2024 cũng cho cùng kết quả.
+var hiredIn2024 = employees
+    .Where(e => e.HireDate >= new DateOnly(2024, 1, 1) && e.HireDate < new DateOnly(2025, 1, 1))
+    .Select(e => new { e.FullName, e.HireDate });
+Print("Q14. Hired in 2024", hiredIn2024);
+
+// ===== Q15. Lương cao thứ 2 mỗi phòng ban (giống DENSE_RANK() = 2) =====
+var secondHighestPerDepartment = employees
+    .GroupBy(e => e.DepartmentId)
+    .SelectMany(g =>
+    {
+        var secondSalary = g.Select(e => e.Salary)
+            .Distinct()
+            .OrderByDescending(s => s)
+            .Skip(1)
+            .Cast<decimal?>()
+            .FirstOrDefault();   // null nếu phòng chỉ có 1 mức lương
+        return g.Where(e => e.Salary == secondSalary);
+    })
+    .Select(e => new { e.DepartmentId, e.FullName, e.Salary });
+Print("Q15. Second highest salary per department", secondHighestPerDepartment);
+
+// Q16–Q20: tự làm tiếp (xem README.md)
 
 // ===== Hàm in dùng chung =====
 void Print<T>(string title, IEnumerable<T> items)
