@@ -13,11 +13,11 @@ Mở `LinqLab.slnx` bằng Visual Studio, nhấn **Ctrl+F5** để chạy.
 - [x] 3. Chỉ lấy `FullName` và `Salary` (projection bằng `Select`).
 - [x] 4. Tổng, trung bình, cao nhất, thấp nhất của lương.
 - [x] 5. Đếm số người theo `Status`.
-- [ ] 6. Theo từng phòng ban: số người và lương trung bình.
-- [ ] 7. Top 3 lương cao nhất công ty.
-- [ ] 8. Top 2 lương cao nhất **mỗi** phòng ban.
-- [ ] 9. Join nhân viên với phòng ban, in `FullName - DepartmentName`.
-- [ ] 10. Left join: liệt kê **mọi** phòng ban kèm số nhân viên (phòng trống phải hiện 0).
+- [x] 6. Theo từng phòng ban: số người và lương trung bình.
+- [x] 7. Top 3 lương cao nhất công ty.
+- [x] 8. Top 2 lương cao nhất **mỗi** phòng ban.
+- [x] 9. Join nhân viên với phòng ban, in `FullName - DepartmentName`.
+- [x] 10. Left join: liệt kê **mọi** phòng ban kèm số nhân viên (phòng trống phải hiện 0).
 - [ ] 11. `Any`: có ai lương dưới 8 triệu không? `All`: mọi người đều có email không?
 - [ ] 12. `FirstOrDefault` với id không tồn tại, xử lý kết quả `null` cho an toàn.
 - [ ] 13. Phân trang: trang 2, mỗi trang 5 người, sắp theo tên (`Skip`/`Take`).

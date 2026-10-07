@@ -56,7 +56,47 @@ var countByStatus = employees
     .Select(g => new { Status = g.Key, Count = g.Count() });
 Print("Q5. Employees per status", countByStatus);
 
-// Q6–Q20: tự làm tiếp (xem README.md)
+// ===== Q6. Theo phòng ban: số người và lương trung bình =====
+var statsByDepartment = employees
+    .GroupBy(e => e.DepartmentId)
+    .Select(g => new
+    {
+        DepartmentId = g.Key,
+        Count = g.Count(),
+        AverageSalary = Math.Round(g.Average(e => e.Salary)),
+    });
+Print("Q6. Headcount and average salary per department", statsByDepartment);
+
+// ===== Q7. Top 3 lương cao nhất công ty =====
+var top3 = employees
+    .OrderByDescending(e => e.Salary)
+    .Take(3)
+    .Select(e => new { e.FullName, e.Salary });
+Print("Q7. Top 3 salaries", top3);
+
+// ===== Q8. Top 2 lương cao nhất mỗi phòng ban =====
+var top2PerDepartment = employees
+    .GroupBy(e => e.DepartmentId)
+    .SelectMany(g => g.OrderByDescending(e => e.Salary).Take(2))
+    .Select(e => new { e.DepartmentId, e.FullName, e.Salary });
+Print("Q8. Top 2 salaries per department", top2PerDepartment);
+
+// ===== Q9. Join nhân viên với phòng ban =====
+var employeeWithDepartment = employees.Join(
+    departments,
+    e => e.DepartmentId,
+    d => d.Id,
+    (e, d) => $"{e.FullName} - {d.Name}");
+Print("Q9. Employee - Department", employeeWithDepartment);
+
+// ===== Q10. Left join: mọi phòng ban kèm số nhân viên =====
+var headcountPerDepartment =
+    from d in departments
+    join e in employees on d.Id equals e.DepartmentId into deptEmployees
+    select new { Department = d.Name, EmployeeCount = deptEmployees.Count() };
+Print("Q10. Every department with headcount (left join)", headcountPerDepartment);
+
+// Q11–Q20: tự làm tiếp (xem README.md)
 
 // ===== Hàm in dùng chung =====
 void Print<T>(string title, IEnumerable<T> items)
