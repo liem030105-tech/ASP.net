@@ -1,14 +1,73 @@
 // Ngày 1 – LINQ lab. Xem đề bài đầy đủ trong labs/01-linq-console/README.md.
-//
-// Bước 2: tự khai báo dữ liệu giả ở cuối file:
-//   record Department(int Id, string Name);
-//   record Employee(int Id, string FullName, string Email, int DepartmentId,
-//                   decimal Salary, string Status, DateOnly HireDate);
-//   - 4 phòng ban, 1 phòng KHÔNG có nhân viên
-//   - khoảng 15 nhân viên, Status: Active / OnLeave / Resigned, 1–2 người Email rỗng
-//
-// Bước 3: giải 20 câu, mỗi câu in kết quả ra console, ví dụ:
-//   Console.WriteLine("Q1. Active employees");
-//   ... code của bạn ...
 
-Console.WriteLine("Hello, LINQ lab!");
+// ===== Dữ liệu mẫu =====
+var departments = new List<Department>
+{
+    new(1, "Engineering"),
+    new(2, "HR"),
+    new(3, "Finance"),
+    new(4, "Marketing"),   // phòng không có nhân viên (dùng cho câu 10)
+};
+
+var employees = new List<Employee>
+{
+    new(1,  "Nguyen Van An",    "an@demo.local",    1, 18_000_000m, "Active",   new DateOnly(2023, 3, 1)),
+    new(2,  "Tran Thi Binh",    "binh@demo.local",  1, 35_000_000m, "Active",   new DateOnly(2020, 6, 15)),
+    new(3,  "Le Van Cuong",     "cuong@demo.local", 2, 22_000_000m, "Active",   new DateOnly(2021, 1, 10)),
+    new(4,  "Pham Minh Dung",   "dung@demo.local",  1, 25_000_000m, "OnLeave",  new DateOnly(2022, 9, 5)),
+    new(5,  "Vo Thu Giang",     "",                 1, 12_000_000m, "Active",   new DateOnly(2024, 2, 20)),
+    new(6,  "Dang Thi Hoa",     "hoa@demo.local",   2, 15_000_000m, "Resigned", new DateOnly(2019, 11, 1)),
+    new(7,  "Bui Dang Khoa",    "khoa@demo.local",  3, 28_000_000m, "Active",   new DateOnly(2018, 4, 12)),
+    new(8,  "Nguyen Thi Lan",   "lan@demo.local",   3, 19_000_000m, "Active",   new DateOnly(2024, 7, 1)),
+    new(9,  "Hoang Van Minh",   "minh@demo.local",  1, 40_000_000m, "Active",   new DateOnly(2017, 8, 21)),
+    new(10, "Do Thi Ngoc",      "",                 2, 7_500_000m,  "Active",   new DateOnly(2025, 5, 3)),
+    new(11, "Nguyen Huu Phuc",  "phuc@demo.local",  3, 32_000_000m, "OnLeave",  new DateOnly(2020, 2, 14)),
+    new(12, "Truong Van Quang", "quang@demo.local", 1, 21_000_000m, "Active",   new DateOnly(2023, 10, 9)),
+    new(13, "Ly Thi Thao",      "thao@demo.local",  3, 16_500_000m, "Resigned", new DateOnly(2021, 12, 1)),
+    new(14, "Phan Van Tuan",    "tuan@demo.local",  2, 26_000_000m, "Active",   new DateOnly(2024, 1, 15)),
+    new(15, "Mai Thi Uyen",     "uyen@demo.local",  1, 30_000_000m, "Active",   new DateOnly(2022, 3, 28)),
+};
+
+// ===== Q1. Nhân viên Active =====
+var activeEmployees = employees.Where(e => e.Status == "Active");
+Print("Q1. Active employees", activeEmployees);
+
+// ===== Q2. Lương > 20 triệu, giảm dần =====
+var highEarners = employees
+    .Where(e => e.Salary > 20_000_000m)
+    .OrderByDescending(e => e.Salary);
+Print("Q2. Salary > 20M, highest first", highEarners);
+
+// ===== Q3. Chỉ lấy FullName và Salary =====
+var nameAndSalary = employees.Select(e => new { e.FullName, e.Salary });
+Print("Q3. Name and salary only", nameAndSalary);
+
+// ===== Q4. Tổng, trung bình, max, min =====
+Console.WriteLine();
+Console.WriteLine("Q4. Salary statistics");
+Console.WriteLine($"  Total:   {employees.Sum(e => e.Salary):N0}");
+Console.WriteLine($"  Average: {employees.Average(e => e.Salary):N0}");
+Console.WriteLine($"  Max:     {employees.Max(e => e.Salary):N0}");
+Console.WriteLine($"  Min:     {employees.Min(e => e.Salary):N0}");
+
+// ===== Q5. Đếm theo Status =====
+var countByStatus = employees
+    .GroupBy(e => e.Status)
+    .Select(g => new { Status = g.Key, Count = g.Count() });
+Print("Q5. Employees per status", countByStatus);
+
+// Q6–Q20: tự làm tiếp (xem README.md)
+
+// ===== Hàm in dùng chung =====
+void Print<T>(string title, IEnumerable<T> items)
+{
+    Console.WriteLine();
+    Console.WriteLine(title);
+    foreach (var item in items)
+        Console.WriteLine($"  {item}");
+}
+
+// ===== Kiểu dữ liệu (phải nằm cuối file) =====
+record Department(int Id, string Name);
+record Employee(int Id, string FullName, string Email, int DepartmentId,
+                decimal Salary, string Status, DateOnly HireDate);
